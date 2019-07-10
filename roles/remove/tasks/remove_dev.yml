@@ -1,0 +1,39 @@
+---
+
+- shell: echo  >> {{pre_check_logs}}
+- shell: echo 'Remove DEV of {{inventory_hostname}} *************' >> {{pre_check_logs}}        
+
+# for failsafe
+- shell: 'ls /dev/{{pvname}}*'
+  register: x
+
+- debug: var=x
+
+- block:  
+     - shell: |
+              echo '***Error*** other DEV found {{pvlist}}!' >> {{pre_check_logs}}
+              echo '{{x.stdout}}' >> {{pre_check_logs}}
+              echo '{{x.stderr}}' >> {{pre_check_logs}}
+     - meta: end_play
+  when: x.stdout | regex_search('/dev/{{ pvname }}2') or x.stdout | regex_search('/dev/{{ pvname }}3') or x.stdout | regex_search('/dev/{{ pvname }}4')       
+
+            
+- name: Remove dev (for partition 1 only)
+  shell: (echo d; echo w) | fdisk /dev/{{ pvname }}
+  ignore_errors: true
+  register: x
+  
+- debug: var=x  
+
+- shell: echo '***Success*** remove DEV {{pvlist}}' >> {{pre_check_logs}}
+  when: x.rc==0
+
+  
+- shell: |
+         echo '***Error*** remove DEV {{pvlist}}' >> {{pre_check_logs}}
+         echo '{{x.stderr}}' >> {{pre_check_logs}}
+         echo '{{x.stdout}}' >> {{pre_check_logs}}
+  when: x.rc!=0
+
+
+- shell: echo  >> {{pre_check_logs}}

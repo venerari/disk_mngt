@@ -1,0 +1,14 @@
+---
+
+tower_job_id: 123 #put actual later
+node_number: 0 # survey
+
+pre_check_tmp: /tmp/pre-check
+
+datestamp: "{{lookup('pipe','date +%Y%m%d')}}"
+send_mail: false
+email_subject: "Query Disk output"
+email_body: "See the attachment email.txt to see the results of this run."       
+
+smtp_server: yahoo.smtp.com
+group_email: group1@yahoo.com

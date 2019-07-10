@@ -1,0 +1,26 @@
+---
+
+- shell: echo  >> {{pre_check_logs}}
+- shell: "echo 'Resize LV of {{inventory_hostname}} *************' >> {{pre_check_logs}}"
+
+
+- name: lv resize
+  lvol:
+    vg: "{{ vgname }}"
+    lv: "{{ lvname }}"
+    size: "{{ newdisksize }}"
+    #force: yes   # donotuse
+  register: x
+  ignore_errors: yes
+
+
+- shell: echo '***Success*** resize LV {{ lvname }} => {{ newdisksize }}!'  >> {{pre_check_logs}}
+  when: x is not failed    
+  
+- shell: |
+         echo '***Error*** resize LV!' >> {{pre_check_logs}}
+         echo '{{x.msg}}' >> {{pre_check_logs}}
+  when: x is failed
+     
+  
+- shell: echo  >> {{pre_check_logs}}

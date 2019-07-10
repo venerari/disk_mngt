@@ -1,0 +1,46 @@
+---
+
+- name: test1
+  hosts: localhost ansible_connection=local
+  gather_facts: false
+  #become: true
+  #vars:    
+  tasks:
+      - name: Initialize an empty list for our strings
+        set_fact:
+           my_strings: []
+      - name: Setup a string variable
+        set_fact:
+           my_name: "Max"
+      - name: Append string to list
+        set_fact:
+           my_strings: "{{ my_strings + [ my_name ] }}"
+      - debug: var=my_strings
+      - name: Append another item to the list
+        set_fact:
+           my_strings: "{{ my_strings + [ 'Power' ] }}"
+      #- debug: var=my_strings
+      - name: loop
+        shell: "echo {{item}}"
+        with_items: "{{my_strings}}"
+    #vars:
+      #folder: inventory
+      #datestamp: "{{lookup('pipe','date +%Y%m%d-%H%M')}}"
+      
+    #- name: backup Opatch
+    #  archive: 
+    #   path: /home/vagrant/test
+    #   dest: "/home/vagrant/test{{datestamp}}.zip"
+    #   format: zip
+    #  register: backup_log
+    #- shell: rm -fr /home/vagrant/test
+    #- shell: "echo success"
+    #  when: backup_log.failed==false
+      
+      #shell: "echo {{zip_log.stderr_lines}} >> {{pre_check_logs}}"
+    #  when: "'cipg_db.ini' in zip_log.stderr_lines | default('')"  
+  
+  
+    #- shell: "ls {{folder}}"
+    #  register: x
+    #  changed_when: "'cipg_db.ini' in x.stdout_lines | default('')"

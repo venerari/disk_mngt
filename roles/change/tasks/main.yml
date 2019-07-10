@@ -1,0 +1,7 @@
+---
+
+
+- include_tasks: lv_resize.yml
+  when: lv_resize|default(False)==True  
+  
+  

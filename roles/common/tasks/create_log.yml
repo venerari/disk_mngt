@@ -1,0 +1,30 @@
+---
+
+- block:
+    - name: delete txt
+      find: paths="{{playbook_dir}}" patterns="*.txt"
+      register: x
+    - file: path="{{ item.path }}" state=absent
+      with_items: "{{ x.files }}"
+    - set_fact: pre_check_file="precheck_logs_{{inventory_hostname}}_{{lookup('pipe','date +%Y%m%d-%H%M')}}.txt"
+    - set_fact: pre_check_logs="{{pre_check_tmp}}/{{pre_check_file}}"
+    - name: "create {{pre_check_tmp}}"
+      file: path={{pre_check_tmp}} state=directory
+    - file: mode=0777 path={{pre_check_tmp}}
+    - name: "create {{pre_check_logs}}"
+      shell: "echo '' > {{pre_check_logs}}"
+    - file: mode=0666 path={{pre_check_logs}}
+    - name: "check size of {{pre_check_logs}}"
+      stat: path={{pre_check_logs}}  
+      register: x
+      failed_when: x.stat.size!=1
+    - shell: |
+             echo >> {{pre_check_logs}}
+  when: start_log==true
+
+- block:  
+     - shell: |
+              echo >> {{pre_check_logs}}
+              echo >> {{pre_check_logs}}    
+  when: start_log==false  
+  

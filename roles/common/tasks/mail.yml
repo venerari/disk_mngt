@@ -1,0 +1,33 @@
+---
+
+- shell: cat > ./email.txt
+  delegate_to: localhost # tower-server
+  run_once: true
+
+- name: Fetching logs to Tower
+  fetch:
+    src: "{{pre_check_logs}}"
+    dest: "./{{pre_check_file}}"
+    flat: yes
+    
+- shell: cat ./{{pre_check_file}} >> ./email.txt
+  delegate_to: localhost # tower-server
+       
+- name: Send email to group.
+  mail:
+    subject: "{{email_subject}}"
+    host: '{{smtp_server}}'
+    port: 25
+    body: '{{email_body}}'
+    from: '{{group_email}}'
+    to: '{{email_to}}'
+    attach: './email.txt'
+  delegate_to: localhost # tower-server
+  run_once: true  
+  ignore_errors: true
+  when: send_mail==true
+
+- debug:
+    msg: 'Pre-check logs {{pre_check_logs}} sent email to SA/DB.'
+  run_once: true   
+  

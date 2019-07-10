@@ -1,0 +1,120 @@
+---
+
+# extra variable send_mail=true  email_to: <ur email> 
+# for create_partition (and others) disk1=sde variable should be on the inventory per server
+
+
+- name: create the logs
+  hosts: all
+  roles:
+    - common
+  vars:
+    create_log: true
+    start_log: true    
+  tags: always  
+
+
+
+- name: Pre-Check
+  hosts: all
+  roles:
+    - { role: query, pre_check: true }    
+  tags: 
+    - pre_check
+
+- name: Check Raw Disk
+  hosts: all
+  roles:
+    - { role: query, check_raw_disk: true }    
+  tags: 
+    - check_raw_disk
+       
+- name: Get Raw Disk (and prepare inventory for partition)
+  hosts: all
+  become: true
+  roles:
+    - { role: query, get_raw_disk: true }    
+  tags: 
+    - get_raw_disk
+       
+
+- name: Create Partition and Mount
+  hosts: all
+  become: true
+  roles:
+    - { role: create, create_dev: true }
+    - { role: create, create_pv: true }
+    - { role: create, create_vg: true }
+    - { role: create, create_lv: true }
+    - { role: create, create_fs: true }
+    - { role: create, mount_fs: true }
+  tags: 
+    - create_partition
+
+- name: Create LV 2 mount
+  hosts: all
+  become: true
+  roles:
+    - { role: create, create_lv: true }
+    - { role: create, create_fs: true }
+    - { role: create, mount_fs: true }
+  tags: 
+    - create_lv2mount
+
+
+- name: Remove Partition and Umount
+  hosts: all
+  become: true
+  roles:
+    - { role: remove, unmount_fs: true }
+    - { role: remove, remove_fs: true }
+    - { role: remove, remove_lv: true }
+    - { role: remove, remove_vg: true }
+    - { role: remove, remove_dev: true }
+  tags: 
+    - remove_partition
+
+
+- name: resize lv
+  hosts: all
+  become: true
+  roles:
+    - { role: change, lv_resize: true }
+  tags: 
+    - lv_resize
+
+
+- name: for testing
+  hosts: all
+  become: true
+  roles:
+    - { role: create, create_fs: true }
+    - { role: create, mount_fs: true }
+  tags: 
+    - test
+    
+- name: End the logs
+  hosts: all
+  roles:
+    - common
+  vars:
+    create_log: true
+    start_log: false    
+  tags: always  
+
+- name: Email the logs
+  hosts: all
+  roles:
+    - common
+  vars:
+    mail: true    
+  tags: always
+    
+- name: Copy Inventory
+  hosts: all
+  tasks:
+    - copy: src='./email.txt' dest='./inventory/partition.ini' force=yes
+      delegate_to: localhost
+      run_once: true
+  tags: 
+    - get_raw_disk    

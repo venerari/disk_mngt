@@ -1,0 +1,23 @@
+---
+
+contd: true
+
+vgname: "toolsvg"
+lvname: "toolslv"
+newdisksize: 8G 
+
+pvname: "{{disk1}}"
+type: "p"
+ptype: "8e"
+partition: "1"
+pvlist: "/dev/{{disk1}}{{partition}}"  
+pvoption: ""
+vgoption: ""  
+option: ""      
+fst: "ext4"
+fsname: "/opt/tools" 
+src: "/dev/{{vgname}}/{{lvname}}"
+
+email_to: # survey  
+email_subject: "Extend Disk output on {{ ansible_fqdn }}"
+email_body: "See the attachment email.txt to see the results of this run."                

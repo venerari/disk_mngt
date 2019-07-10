@@ -1,0 +1,12 @@
+---
+
+
+- include_tasks: pre_check.yml
+  when: pre_check|default(False)==True  
+  
+- include_tasks: check_raw_disk.yml
+  when: check_raw_disk|default(False)==True  
+ 
+- include_tasks: get_raw_disk.yml
+  when: get_raw_disk|default(False)==True  
+ 

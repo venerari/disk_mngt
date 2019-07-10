@@ -1,0 +1,32 @@
+---
+
+############# remove partition variables
+
+contr: true
+
+pvname: "{{disk1}}"
+type: "p"
+ptype: "8e"
+partition: "1"
+disksize: 9G #10G
+pvlist: "/dev/{{disk1}}{{partition}}"  
+force: "yes"
+answer: "no"
+vgname: "toolsvg"
+lvname: "dynatrace"
+pesize: "4"
+pvoption: ""
+vgoption: ""  
+size: "+100%FREE"
+active: "yes"
+option: ""      
+fst: "ext4"
+fsname: "/opt/tools/dynatrace" 
+src: "/dev/{{vgname}}/{{lvname}}"
+
+remove_fstab: true
+
+
+email_to: # survey  
+email_subject: "Delete Partition output on {{ ansible_fqdn }}"
+email_body: "See the attachment email.txt to see the results of this run."        

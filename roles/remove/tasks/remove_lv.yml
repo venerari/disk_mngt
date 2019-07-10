@@ -1,0 +1,27 @@
+---
+
+- shell: echo  >> {{pre_check_logs}}
+- shell: "echo 'Remove LV of {{inventory_hostname}} *************' >> {{pre_check_logs}}"
+
+
+- name: lv remove
+  lvol:
+    vg: "{{ vgname }}"
+    lv: "{{ lvname }}"
+    state: absent
+    force: "{{ force }}"
+  ignore_errors: true
+  register: x
+
+- shell: echo '***Success*** remove LV {{src}} !'  >> {{pre_check_logs}}
+  when: x is not failed    
+  
+- block:  
+     - shell: |
+              echo '***Error*** LV remove --{{x.stdout}}!'  >> {{pre_check_logs}}
+              echo '{{x.msg}}' >> {{pre_check_logs}} 
+     - set_fact: contr=false
+  when: x is failed  
+
+    
+- shell: echo  >> {{pre_check_logs}}  

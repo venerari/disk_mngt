@@ -1,0 +1,31 @@
+---
+
+- name: test1
+  hosts: localhost ansible_connection=local
+  gather_facts: false
+  become: true
+  #vars:    
+  tasks:
+    - name: find for raw
+      shell: |
+             if [[ $(lsblk /dev/sd{{item}} | wc -l) = 2 ]]; then lsblk /dev/sd{{item}} | grep G ; fi 
+      become: true
+      ignore_errors: true
+      register: x
+      with_items:
+          - b
+          - c
+          - d
+
+    - shell: rm -f ./out.txt && rm -f ./result.txt && rm -f ./final.txt
+      ignore_errors: true
+        
+    - shell: echo {{item.stdout}} >> ./out.txt          
+      when: item.stdout is defined and item.stdout!=""
+      with_items: "{{x.results}}"
+    
+    - shell: "echo '{{inventory_hostname}} ,' > ./result.txt"        
+            
+    - shell: awk '{ print "" $1"="$4 }' out.txt >> ./result.txt
+
+    - shell: tr -s '\n' ' ' <result.txt >> ./final.txt  

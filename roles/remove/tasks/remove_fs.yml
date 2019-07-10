@@ -1,0 +1,24 @@
+---
+
+
+- shell: echo  >> {{pre_check_logs}}
+- shell: "echo 'Remove FS of {{inventory_hostname}} *************' >> {{pre_check_logs}}"
+
+   
+- file: 
+     path: '{{fsname}}'
+     state: absent
+  register: x
+
+- shell: echo  ***Success*** remove FS {{fsname}}! >> {{pre_check_logs}}
+  when: x is not failed  
+
+- block: 
+     - shell: |
+              echo  '***Error*** not remove FS or not exist {{fsname}}!' >> {{pre_check_logs}}
+              echo '{{x.msg}}' >> {{pre_check_logs}}
+     - set_fact: contr=false
+  when: x is failed
+  
+  
+- shell: echo  >> {{pre_check_logs}}  

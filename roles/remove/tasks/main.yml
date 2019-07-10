@@ -1,0 +1,27 @@
+---
+
+
+- include_tasks: unmount_fs.yml
+  when: unmount_fs|default(False)==True  
+  
+  
+- include_tasks: remove_fs.yml
+  when: 
+     - remove_fs|default(False)==True 
+     - contr|default(False)==True
+
+- include_tasks: remove_lv.yml
+  when: 
+     - remove_lv|default(False)==True 
+     - contr|default(False)==True
+
+- include_tasks: remove_vg.yml
+  when: 
+     - remove_vg|default(False)==True 
+     - contr|default(False)==True
+
+- include_tasks: remove_dev.yml
+  when: 
+     - remove_dev|default(False)==True 
+     - contr|default(False)==True
+ 

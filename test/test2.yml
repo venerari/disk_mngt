@@ -1,0 +1,32 @@
+---
+
+- name: test1
+  hosts:  "{{ target_host | default('all') }}"
+  gather_facts: false
+  #become: true
+  #vars:    
+  tasks:
+  
+      - name: test
+        shell: "echo test"
+    #vars:
+      #folder: inventory
+      #datestamp: "{{lookup('pipe','date +%Y%m%d-%H%M')}}"
+      
+    #- name: backup Opatch
+    #  archive: 
+    #   path: /home/vagrant/test
+    #   dest: "/home/vagrant/test{{datestamp}}.zip"
+    #   format: zip
+    #  register: backup_log
+    #- shell: rm -fr /home/vagrant/test
+    #- shell: "echo success"
+    #  when: backup_log.failed==false
+      
+      #shell: "echo {{zip_log.stderr_lines}} >> {{pre_check_logs}}"
+    #  when: "'cipg_db.ini' in zip_log.stderr_lines | default('')"  
+  
+  
+    #- shell: "ls {{folder}}"
+    #  register: x
+    #  changed_when: "'cipg_db.ini' in x.stdout_lines | default('')"

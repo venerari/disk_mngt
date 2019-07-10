@@ -1,0 +1,48 @@
+---
+
+- shell: echo  >> {{pre_check_logs}}
+- shell: "echo 'Un-mount FS of {{inventory_hostname}} *************' >> {{pre_check_logs}}"
+  
+
+- name: unmount fs
+  mount:
+    path: '{{fsname}}'
+    state: "unmounted"
+  ignore_errors: true
+  register: x
+
+  
+- block:  
+     - shell: echo ***Success*** {{ fsname }} unmount!  >> {{pre_check_logs}}
+  when: x is not failed
+      
+- block:
+     - shell: |
+              echo ***Error*** {{ fsname }} unmount!  >> {{pre_check_logs}}
+              echo '{{x.msg}}' >> {{pre_check_logs}}
+     - set_fact: contr=false
+     - meta: end_play  
+  when: x is failed    
+  
+- block:  
+     - name: Remove entry in fstab
+       lineinfile:
+         path: /etc/fstab
+         state: absent
+         regexp: '{{ lvname }}'  
+       register: y
+       
+     - shell: echo ***Success*** remove fstab entry!  >> {{pre_check_logs}}
+       when: y is not failed    
+     
+     - shell: |
+              echo ***Error*** remove fstab entry!  >> {{pre_check_logs}}
+              echo '{{y.msg}}' >> {{pre_check_logs}}
+       when: y is failed
+  when: remove_fstab         
+
+- shell: echo ***Warning*** fstab entry not remove!  >> {{pre_check_logs}}
+  when: not(remove_fstab)           
+  
+  
+- shell: echo  >> {{pre_check_logs}}    

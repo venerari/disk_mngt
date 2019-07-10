@@ -1,0 +1,55 @@
+---
+
+- shell: "ps -ef | grep -v grep | grep 'oneagent' | wc -l"
+  ignore_errors: true
+  register: z  
+  
+#- meta: end_play
+#  when: z.stdout|int>0  
+
+- shell: "tail -n 10 /etc/multipath/bindings|grep -v '#' | awk '{print $1}'"
+  ignore_errors: true
+  register: w
+  
+- debug: var=w  
+
+- set_fact: raw_prefix='mpath'
+  when: item.stdout|regex_search('mpath')
+  with_items: "{{w.results}}"
+  until: raw_prefix=='mpath'
+
+- block: 
+    - shell: |
+             if [[ $(fdisk -l /dev/mapper/{{item.stdout}} |  grep '/dev/mapper/{{item.stdout}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/mapper/{{item.stdout}} | grep 'Disk /dev' | awk '{print $3}' ; fi 
+      ignore_errors: true
+      register: x
+      with_items: "{{w.results}}"
+      
+    - shell: |
+             if [[ $(fdisk -l /dev/mapper/{{item.stdout}} |  grep '/dev/mapper/{{item.stdout}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/mapper/{{item.stdout}} | grep 'Disk /dev' | awk '{print $4}' ; fi 
+      ignore_errors: true
+      register: y
+      with_items: "{{w.results}}"
+  when: raw_prefix=='mpath'
+
+- block: 
+    - shell: |
+             if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $3}' ; fi 
+      ignore_errors: true
+      register: x
+      with_items: "{{letters}}"
+      
+    - shell: |
+             if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $4}' ; fi 
+      ignore_errors: true
+      register: y
+      with_items: "{{letters}}"
+  when: raw_prefix=='sd'
+  
+- set_fact: gotit='{{x.results[item|int].item}}'          
+  when: x.results[item].stdout|int>=10 and x.results[item].stdout|int<10.9 and y.results[item].stdout|regex_search('GB') 
+  with_items: '{{numbers}}'
+  until: gotit is defined
+  
+- shell: "echo '{{inventory_hostname}}  disk1={{raw_prefix}}{{gotit}}' >> {{pre_check_logs}}"
+  when: gotit is defined
