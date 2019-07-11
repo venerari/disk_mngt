@@ -10,8 +10,7 @@
 - meta: end_play
   when: z.stdout|int>0 
 
-- shell: "cat ./test2 | tr -s '\n' '\n' | grep -v '#' > {{pre_check_tmp}}/temp43_oneagent.log" 
-  #/etc/multipath/bindings 
+- shell: "cat /etc/multipath/bindings  | tr -s '\n' '\n' | grep -v '#' > {{pre_check_tmp}}/temp43_oneagent.log" 
   ignore_errors: true
   
 - shell: "tail -n 9 {{pre_check_tmp}}/temp43_oneagent.log > {{pre_check_tmp}}/temp44_oneagent.log" 
