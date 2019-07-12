@@ -1,49 +1,20 @@
 ---
 
-- file: path="{{pre_check_tmp}}/res1.log" state=absent
-  
-- file: path="{{pre_check_tmp}}/res.log" state=absent
-  
-- file: path="{{pre_check_tmp}}/res2.log" state=absent
 
-- file: path="{{pre_check_tmp}}/res1.log" state=touch
-  
-- file: path="{{pre_check_tmp}}/res.log" state=touch
-  
-- file: path="{{pre_check_tmp}}/res2.log" state=touch
-
-
-- shell: "if [[ $(lsblk /dev/sd{{item}} | wc -l) = 2 ]]; then lsblk /dev/sd{{item}} | grep G ; fi" 
+- shell: echo  >> {{pre_check_logs}}
+- shell: "echo 'Check disk of {{inventory_hostname}} start *************' >> {{pre_check_logs}}"
+         
+         
+- name: precheck
+  shell: |
+         echo 'Dynatrace folder exist?:' >> {{pre_check_logs}} 2>&1
+         ls -la /opt/tools/dynatrace >> {{pre_check_logs}} 2>&1
+         echo 'Dynatrace running?:' >> {{pre_check_logs}} 2>&1
+         ps -ef | grep oneagent | wc -l  >> {{pre_check_logs}} 2>&1
+         echo 'Free memory:' >> {{pre_check_logs}} 2>&1
+         free -m|grep 'Mem:' | awk '{print $4}' >> {{pre_check_logs}} 2>&1                    
+  become: true
   ignore_errors: true
-  register: x
-  with_items:
-      - b
-      - c
-      - d
-      - e
-      - f
-      - g
-    
-- shell: echo {{item.stdout}} >> {{pre_check_tmp}}/res1.log          
-  when: item.stdout is defined and item.stdout!=""
-  with_items: "{{x.results}}"
   
-- set_fact: gotit=false
+- shell: "echo 'Check disk of {{inventory_hostname}} end *************' >> {{pre_check_logs}}"
 
-- set_fact: gotit=true          
-  when: item.stdout is defined and item.stdout!=""
-  with_items: "{{x.results}}"
-    
-- block: 
-     - shell: "echo '{{inventory_hostname}} ,' > {{pre_check_tmp}}/res.log"        
-             
-     - shell: awk '{ print "disk1="$1 " " $4 " " }' {{pre_check_tmp}}/res1.log >> {{pre_check_tmp}}/res.log
-     
-     - shell: ls -lad /opt/tools/dynatrace/ >> {{pre_check_tmp}}/res2.log
-       become: true
-       ignore_errors: true
-     
-     - shell:  awk '{ print "," $9 }' {{pre_check_tmp}}/res2.log >> {{pre_check_tmp}}/res.log
-     
-     - shell: tr -s '\n' ' ' <{{pre_check_tmp}}/res.log >> {{pre_check_logs}}
-  when: gotit
