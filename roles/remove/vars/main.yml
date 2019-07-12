@@ -8,7 +8,7 @@ pvname: "{{disk1}}"
 type: "p"
 ptype: "8e"
 partition: "1"
-disksize: 9G #10G
+disksize: #10G
 pvlist: "/dev/{{disk1}}{{partition}}"  
 force: "yes"
 answer: "no"
