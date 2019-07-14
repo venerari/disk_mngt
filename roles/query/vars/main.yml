@@ -9,6 +9,7 @@ email_body: "See the attachment email.txt to see the results of this run."
 gotit:
 partition: 1
 raw_prefix: sd
+disk_size_2check: 10
 
 # excluded the a for a might the os like sda
 letters:
