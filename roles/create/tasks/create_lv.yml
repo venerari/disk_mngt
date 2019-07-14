@@ -1,8 +1,10 @@
 ---
 
-
 - shell: echo  >> {{pre_check_logs}}
 - shell: "echo 'Create LV of {{inventory_hostname}} *************' >> {{pre_check_logs}}"
+  
+- set_fact: pvlist='/dev/mapper/{{disk1}}{{partition}}'
+  when: disk1|regex_search('mpath')  
   
 - name: lvcreate
   lvol:
