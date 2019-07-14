@@ -3,6 +3,12 @@
 - shell: echo  >> {{pre_check_logs}}
 - shell: echo 'Remove DEV of {{inventory_hostname}} *************' >> {{pre_check_logs}}        
 
+- set_fact: pvname='mapper/{{disk1}}'
+  when: disk1|regex_search('mpath')
+  
+- set_fact: pvlist='/dev/{{pvname}}{{partition}}'
+  when: disk1|regex_search('mpath')  
+
 # for failsafe
 - shell: 'ls /dev/{{pvname}}*'
   register: x
@@ -11,7 +17,7 @@
 
 - block:  
      - shell: |
-              echo '***Error*** other DEV found {{pvlist}}!' >> {{pre_check_logs}}
+              echo '***Error*** other PARTITION found {{pvname}}[x]!' >> {{pre_check_logs}}
               echo '{{x.stdout}}' >> {{pre_check_logs}}
               echo '{{x.stderr}}' >> {{pre_check_logs}}
      - meta: end_play
