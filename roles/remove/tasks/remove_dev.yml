@@ -26,13 +26,27 @@
   ignore_errors: true
   register: x
 
-- shell: echo '***Success*** remove DEV {{pvlist}}' >> {{pre_check_logs}}
+- shell: echo '***Success*** remove DEV {{pvlist}}!' >> {{pre_check_logs}}
   when: x.rc==0
   
 - shell: |
-         echo '***Error*** remove DEV {{pvlist}}' >> {{pre_check_logs}}
+         echo '***Error*** remove DEV {{pvlist}}!' >> {{pre_check_logs}}
          echo '{{x.stderr}}' >> {{pre_check_logs}}
          echo '{{x.stdout}}' >> {{pre_check_logs}}
   when: x.rc!=0
+  
+- name: Reset dev (for partition 1 only)
+  shell: (echo o; echo w) | fdisk /dev/{{ pvname }}
+  ignore_errors: true
+  register: x
+
+- shell: echo '***Success*** reset DEV {{pvname}}!  Needed for warning error 22 if exist above.' >> {{pre_check_logs}}
+  when: x.rc==0
+  
+- shell: |
+         echo '***Error*** reset DEV {{pvname}}!  Needed for warning error 22 if exist above.' >> {{pre_check_logs}}
+         echo '{{x.stderr}}' >> {{pre_check_logs}}
+         echo '{{x.stdout}}' >> {{pre_check_logs}}
+  when: x.rc!=0  
 
 - shell: echo  >> {{pre_check_logs}}

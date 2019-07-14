@@ -1,4 +1,4 @@
 [test]
-localhost ansible_connection=local  disk1=sdc
+localhost ansible_connection=local  disk1=sdb
 #vm1   ansible_host=52.242.30.121     disk1=sdc
  
