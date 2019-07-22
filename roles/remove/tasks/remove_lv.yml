@@ -21,6 +21,5 @@
               echo '{{x.msg}}' >> {{pre_check_logs}} 
      - set_fact: contr=false
   when: x is failed  
-
     
 - shell: echo  >> {{pre_check_logs}}  
