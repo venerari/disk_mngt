@@ -19,7 +19,7 @@
     host: '{{smtp_server}}'
     port: 25
     body: '{{email_body}}'
-    from: '{{group_email}}'
+    from: '{{email_group}}'
     to: '{{email_to}}'
     attach: './email.txt'
   delegate_to: localhost # tower-server
