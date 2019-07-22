@@ -26,8 +26,6 @@
   shell: (echo d; echo w) | fdisk /dev/{{ pvname }}
   ignore_errors: true
   register: x
-  
-- debug: var=x  
 
 - shell: echo '***Success*** remove DEV {{pvlist}}' >> {{pre_check_logs}}
   when: x.rc==0
