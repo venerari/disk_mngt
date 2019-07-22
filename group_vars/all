@@ -1,14 +1,13 @@
 ---
 
 pre_check_tmp: /tmp/pre-check
-
 datestamp: "{{lookup('pipe','date +%Y%m%d')}}"
 send_mail: false
 email_subject: # extra vars or tower survey
 email_body: "See the attachment email.txt to see the results of this run."       
 email_to: #<my_email>@yahoo.com # extra vars or tower survey
-smtp_server: yahoo.smtp.com # extra vars or tower survey
 email_group: group1@yahoo.com # extra vars or tower survey
+smtp_server: yahoo.smtp.com # extra vars or tower survey
 
 vgname: "toolsvg"
 lvname: "dynatrace"
