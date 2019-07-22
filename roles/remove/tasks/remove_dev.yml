@@ -13,8 +13,6 @@
 - shell: 'ls /dev/{{pvname}}*'
   register: x
 
-- debug: var=x
-
 - block:  
      - shell: |
               echo '***Error*** other PARTITION found {{pvname}}[x]!' >> {{pre_check_logs}}
