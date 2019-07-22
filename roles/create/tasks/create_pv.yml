@@ -1,6 +1,5 @@
 ---
 
-
 - shell: echo  >> {{pre_check_logs}}
 - shell: echo 'Create PV of {{inventory_hostname}} *************' >> {{pre_check_logs}}
 
