@@ -4,7 +4,7 @@
 - shell: "echo 'Mount FS of {{inventory_hostname}} *************' >> {{pre_check_logs}}"
 
 - set_fact: src='/dev/mapper/{{vgname}}-{{lvname}}'
-  when: disk1|regex_search('mpath')
+  #when: disk1|regex_search('mpath')
   
 - shell: "grep -m1 ' xfs ' /etc/fstab"
   register: x
