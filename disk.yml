@@ -110,11 +110,12 @@
     mail: true    
   tags: always
     
-- name: Copy Inventory
-  hosts: all
-  tasks:
-    - copy: src='./email.txt' dest='./inventory/partition.ini' force=yes
-      delegate_to: localhost
-      run_once: true
-  tags: 
-    - get_raw_disk    
+# confusing with the history of repo on tower --you need to manually copy it    
+#- name: Copy Inventory
+#  hosts: all
+#  tasks:
+#    - copy: src='./email.txt' dest='./inventory/partition.ini' force=yes
+#      delegate_to: localhost
+#      run_once: true
+#  tags: 
+#    - get_raw_disk    
