@@ -1,5 +1,8 @@
 ---
 
+- shell: "echo '# You should manually copy this to partition.ini, refresh tower repo and inventory and check!' >> {{pre_check_logs}}"
+- shell: "echo >> {{pre_check_logs}}"
+
 - file: path="{{pre_check_tmp}}/temp43_oneagent.log" state=absent
 - file: path="{{pre_check_tmp}}/temp44_oneagent.log" state=absent
 
