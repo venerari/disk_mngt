@@ -36,3 +36,6 @@ numbers:
   - 7
   - 8
   - 9  
+
+dynatrace_ip:   
+  - 127.0.0.1 

@@ -1,0 +1,21 @@
+---
+
+- shell: "echo 'Check port of {{inventory_hostname}} *************' >> {{pre_check_logs}}"
+
+- name: Check port 9999
+  wait_for:
+      host: "{{item}}"
+      port: 22
+      state: started
+      timeout: 10
+  with_items: "{{dynatrace_ip}}"
+  register: x
+  
+- shell: "echo '***Success*** check port' >> {{pre_check_logs}}"
+  when: x is not failed
+  
+- block:  
+     - shell: |
+              echo '***Error*** check port' >> {{pre_check_logs}}
+              echo {{x.msg}} >> {{pre_check_logs}}
+  when: x is failed

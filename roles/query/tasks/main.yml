@@ -10,3 +10,6 @@
 - include_tasks: get_raw_disk.yml
   when: get_raw_disk|default(False)==True  
  
+- include_tasks: check_firewall.yml
+  when: check_firewall|default(False)==True  
+   

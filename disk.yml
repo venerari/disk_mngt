@@ -36,6 +36,13 @@
     - { role: query, get_raw_disk: true }    
   tags: 
     - get_raw_disk
+    
+- name: Check Firewall
+  hosts: all
+  roles:
+    - { role: query, check_firewall: true }    
+  tags: 
+    - check_firewall    
        
 
 - name: Create Partition and Mount
