@@ -41,13 +41,14 @@
 - name: Save to log
   shell: |
          echo "    disk={{raw_prefix}}{{x.results[item].item}} size={{x.results[item].stdout}} {{y.results[item].stdout | replace(',','')}}" >> {{pre_check_logs}}
+         echo "    disk={{raw_prefix}}{{x.results[item].item}} size={{x.results[item].stdout}} {{y.results[item].stdout | replace(',','')}}" >> {{pre_check_tmp}}/temp44_009.log
   when: x.results[item].stdout|int>=1 and x.results[item].stdout is defined
   with_items: '{{numbers}}'
+  register: z
+  
+- debug: var=z  
 
 - name: Show to ansible log
   debug:
-    msg: 
-      - "    disk={{raw_prefix}}{{x.results[item].item}} size={{x.results[item].stdout}} {{y.results[item].stdout | replace(',','')}}"  
-  when: x.results[item].stdout|int>=1 and x.results[item].stdout is defined
-  with_items: '{{numbers}}'
-      
+     msg: "{{lookup('file','{{pre_check_tmp}}/temp44_009.log')}}"
+ 
