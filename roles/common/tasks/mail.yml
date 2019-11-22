@@ -25,7 +25,7 @@
   delegate_to: localhost # tower-server
   run_once: true  
   ignore_errors: true
-  when: send_mail==true
+  when: send_mail=='TRUE'
 
 - debug:
     msg: 'Pre-check logs {{pre_check_logs}} sent email to SA/DB.'
