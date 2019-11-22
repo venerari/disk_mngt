@@ -2,6 +2,7 @@
 
 - file: path="{{pre_check_tmp}}/temp43_007.log" state=absent
 - file: path="{{pre_check_tmp}}/temp44_008.log" state=absent
+- file: path="{{pre_check_tmp}}/temp44_009.log" state=absent
 
 - name: Check bindings
   shell: "cat /etc/multipath/bindings | tr -s '\n' '\n' | grep -v '#' > {{pre_check_tmp}}/temp43_007.log || true" 
@@ -20,38 +21,18 @@
   with_items: "{{w.results}}"
   until: raw_prefix=='mpath'
    
-- block: 
+- name: Get disk size
+  shell: |
+         if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $3}'; fi || true
+  register: x
+  with_items: "{{letters}}"
 
-    - name: Get disk size
-      shell: |
-             if [[ $(fdisk -l /dev/mapper/{{w.results[item].stdout}} |  grep '/dev/mapper/{{w.results[item].stdout}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/mapper/{{w.results[item].stdout}} | grep 'Disk /dev' | awk '{print $3}' ; fi || true
-      register: x
-      with_items: '{{numbers}}' 
-  
-    - name: Get disk GB
-      shell: |
-             if [[ $(fdisk -l /dev/mapper/{{w.results[item].stdout}} |  grep '/dev/mapper/{{w.results[item].stdout}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/mapper/{{w.results[item].stdout}} | grep 'Disk /dev' | awk '{print $4}' ; fi || true
-      register: y
-      with_items: '{{numbers}}' 
-               
-  when: raw_prefix=='mpath'
+- name: Get disk byte
+  shell: |
+         if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $4}'; fi || true
+  register: y
+  with_items: "{{letters}}"
 
-- block: 
-
-    - name: Get disk size
-      shell: |
-             if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $3}' ; fi || true
-      register: x
-      with_items: "{{letters}}"
-      
-    - name: Get disk GB  
-      shell: |
-             if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $4}' ; fi || true
-      register: y
-      with_items: "{{letters}}"
-      
-  when: raw_prefix!='mpath'
-  
 - name: Print header
   shell: |
          echo "{{inventory_hostname}}" >> {{pre_check_logs}}
@@ -60,13 +41,13 @@
 - name: Save to log
   shell: |
          echo "    disk={{raw_prefix}}{{x.results[item].item}} size={{x.results[item].stdout}} {{y.results[item].stdout | replace(',','')}}" >> {{pre_check_logs}}
-  when: x.results[item].stdout|int>={{disk_size_min}} and x.results[item].stdout|int<={{disk_size_max}} and x.results[item].stdout is defined
+  when: x.results[item].stdout|int>=1 and x.results[item].stdout is defined
   with_items: '{{numbers}}'
 
 - name: Show to ansible log
   debug:
     msg: 
       - "    disk={{raw_prefix}}{{x.results[item].item}} size={{x.results[item].stdout}} {{y.results[item].stdout | replace(',','')}}"  
-  when: x.results[item].stdout|int>={{disk_size_min}} and x.results[item].stdout|int<={{disk_size_max}} and x.results[item].stdout is defined  
+  when: x.results[item].stdout|int>=1 and x.results[item].stdout is defined
   with_items: '{{numbers}}'
       
