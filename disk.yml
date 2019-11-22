@@ -14,7 +14,6 @@
   tags: always  
 
 
-
 - name: Pre-Check
   hosts: all
   roles:
@@ -98,31 +97,11 @@
     - { role: create, create_fs: true }
     - { role: create, mount_fs: true }
   tags: 
-    - test
-    
-- name: End the logs
-  hosts: all
-  roles:
-    - common
-  vars:
-    create_log: true
-    start_log: false    
-  tags: always  
+    - test    
 
 - name: Email the logs
   hosts: all
   roles:
-    - common
-  vars:
-    mail: true    
+    - { role: common, mail: true }
   tags: always
-    
-# confusing with the history of repo on tower --you need to manually copy it    
-#- name: Copy Inventory
-#  hosts: all
-#  tasks:
-#    - copy: src='./email.txt' dest='./inventory/partition.ini' force=yes
-#      delegate_to: localhost
-#      run_once: true
-#  tags: 
-#    - get_raw_disk    
+  
