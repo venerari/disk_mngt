@@ -9,7 +9,8 @@ email_body: "See the attachment email.txt to see the results of this run."
 gotit:
 partition: 1
 raw_prefix: sd
-disk_size_2check: 10
+disk_size_min: 10
+disk_size_max: 10
 
 # excluded the a for a might the os like sda
 letters:
@@ -38,4 +39,12 @@ numbers:
   - 9  
 
 dynatrace_ip:   
-  - 127.0.0.1 
+  - 10.197.145.206 
+  - 10.197.145.207 
+  - 10.197.145.208 
+  - 10.197.145.209 
+  - 10.197.145.210 
+  - 10.197.145.211 
+  - 10.197.145.212 
+  - 10.197.145.213
+   
